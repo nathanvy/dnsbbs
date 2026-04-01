@@ -1,14 +1,11 @@
 FROM clfoundation/sbcl:latest
-
-# Install Quicklisp
-RUN curl -fsSL https://beta.quicklisp.org/quicklisp.lisp -o /tmp/quicklisp.lisp && \
-    sbcl --non-interactive \
-         --load /tmp/quicklisp.lisp \
-         --eval '(quicklisp-quickstart:install :path "/root/quicklisp/")' \
-    rm /tmp/quicklisp.lisp
+ARG QUICKLISP_ADD_TO_INIT_FILE=true
 
 WORKDIR /app
-COPY . .
+COPY . /app
+
+RUN set -x; \
+  /usr/local/bin/install-quicklisp
 
 RUN ln -s /app /root/quicklisp/local-projects/dnsbbs
 
