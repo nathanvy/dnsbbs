@@ -51,6 +51,7 @@
                                        client-ip
                                        (getf args :payload)
                                        (getf args :seq)))
+                   (:wtf (handle-wtf))
                    (t :nxdomain))))
             (if (eq result :nxdomain)
                 (build-dns-response request nil +rcode-nxdomain+)

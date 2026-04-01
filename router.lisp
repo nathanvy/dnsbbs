@@ -69,11 +69,15 @@
                                  :seq     (third labels)
                                  :topic   (string-downcase (fourth labels)))))
 
+      ;; wtf.ZONE  →  :wtf (help)
+      ((and (= n 1) (string-equal (first labels) "wtf"))
+       (values :wtf nil))
+
       (t (values :nxdomain nil)))))
 
 (defun route-query (qname-labels)
   "Top-level router.  Returns (values keyword plist) where keyword is one of:
-  :index :meta :msg :post-single :post-chunk :nxdomain"
+  :index :meta :msg :post-single :post-chunk :wtf :nxdomain"
   (let ((stripped (strip-zone qname-labels +zone+)))
     (if stripped
         (match-route stripped)

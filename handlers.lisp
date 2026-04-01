@@ -132,3 +132,15 @@
                                       (getf entry :created-at)
                                       now)))
           (list (format nil "ok;seq=~A" seq))))))
+
+;;; Help handler
+
+(defun handle-wtf ()
+  "Return help text as multiple TXT strings, one per TXT record."
+  (list
+   "Topics: dig TXT index.bbs.stackgho.st"
+   "Info: dig TXT meta.<topic>.bbs.stackgho.st"
+   "Read: dig TXT msg.<id>.<topic>.bbs.stackgho.st"
+   "Read pg: dig TXT msg.<id>.<page>.<topic>.bbs.stackgho.st"
+   "Post: dig TXT post.<b32(msg)>.<topic>.bbs.stackgho.st"
+   "Post long: post.<b32-chunk>.<seq>.<topic>.bbs.stackgho.st, seq=0,1,...,end"))
