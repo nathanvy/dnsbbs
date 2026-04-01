@@ -1,4 +1,4 @@
-FROM clfoundation/sbcl:2.4.2
+FROM clfoundation/sbcl:latest
 
 # Install Quicklisp
 RUN curl -fsSL https://beta.quicklisp.org/quicklisp.lisp -o /tmp/quicklisp.lisp && \
