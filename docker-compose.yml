@@ -1,0 +1,6 @@
+services:
+  dnsbbs:
+    build: .
+    ports:
+      - "31337:31337/udp"
+    restart: unless-stopped
