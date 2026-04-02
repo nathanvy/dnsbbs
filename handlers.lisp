@@ -47,8 +47,7 @@
   (let ((topic (get-topic store topic-name)))
     (if topic
         (let ((latest (topic-latest-id store topic-name)))
-          (list (format nil "name=~A;desc=~A;latest=~A"
-                        (topic-name topic)
+          (list (format nil "desc=~A;latest=~A"
                         (topic-desc topic)
                         (or latest 0))))
         :nxdomain)))
@@ -65,8 +64,7 @@
                (prev-id  (when (> id 1)
                            (when (get-message store topic-name (1- id))
                              (1- id))))
-               (full-str (format nil "id=~A;author=~A;ts=~A;body=~A~@[;next=~A~]"
-                                 id
+               (full-str (format nil "author=~A;ts=~A;body=~A~@[;next=~A~]"
                                  (message-author msg)
                                  ts
                                  body-b64
