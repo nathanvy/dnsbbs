@@ -44,7 +44,7 @@ Or, for messages too long for a single response that have been chunked:
 msg.<id>.<page>.<topic>.bbs.example.org TXT
 ```
 
-Messages are returned base64-encoded.
+Messages are returned base64-encoded (because only leet haxors use base64 of course)
 
 ## Posting messages
 Posting messages is accomplished by Base32-encoding the message contents. 
