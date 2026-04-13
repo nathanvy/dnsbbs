@@ -49,6 +49,7 @@
                     (handle-post-chunk store
                                        (getf args :topic)
                                        client-ip
+                                       (getf args :nonce)
                                        (getf args :payload)
                                        (getf args :seq)))
                    (:wtf (handle-wtf))

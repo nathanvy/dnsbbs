@@ -99,13 +99,14 @@
     (storage-error ()
       :nxdomain)))
 
-(defun handle-post-chunk (store topic-name client-ip payload-b32 seq)
+(defun handle-post-chunk (store topic-name client-ip nonce payload-b32 seq)
   "Handle one chunk of a multi-part post.
+  NONCE is a client-supplied opaque string that uniquely identifies the posting session.
   SEQ is either a numeric string (\"0\", \"1\", ...) or \"end\".
   On intermediate chunks: accumulates and returns \"ok;seq=N\".
   On \"end\": concatenates all chunks, decodes, posts, returns \"ok;id=N\"."
   (expire-chunk-buffers)
-  (let* ((key   (list client-ip topic-name))
+  (let* ((key   (list client-ip nonce topic-name))
          (entry (gethash key *chunk-buffer*))
          (now   (get-universal-time)))
     (if (string-equal seq "end")
@@ -141,4 +142,4 @@
    "Read: dig TXT msg.<id>.<topic>.bbs.stackgho.st"
    "Read pg: dig TXT msg.<id>.<page>.<topic>.bbs.stackgho.st"
    "Post: dig TXT post.<b32(msg)>.<topic>.bbs.stackgho.st"
-   "Post long: post.<b32-chunk>.<seq>.<topic>.bbs.stackgho.st, seq=0,1,...,end"))
+   "Post long: post.<b32-chunk>.<nonce>.<seq>.<topic>.bbs.stackgho.st, seq=0,1,...,end"))

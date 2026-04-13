@@ -56,9 +56,9 @@ post.<b32(msg)>.<topic>.bbs.example.org TXT
 If the message is too long, it must be chunked:
 
 ```
-post.<b32chunk>.<seq>.<topic>.bbs.example.org TXT
+post.<b32chunk>.<nonce>.<seq>.<topic>.bbs.example.org TXT
 ```
 
-In this last query, `<seq>` is an integer sequence number beginning at 0 and increasing from there.  The final chunk is signified by passing the string `end` for the sequence number, rather than an integer.
+In this last query, `<nonce>` is a short client-supplied random string (e.g. a hex string like `a3f9`) that uniquely identifies the posting session. This prevents chunk buffers from colliding when two clients behind the same NAT post simultaneously.  `<seq>` is an integer sequence number beginning at 0 and increasing from there.  The final chunk is signified by passing the string `end` for the sequence number, rather than an integer.
 
 

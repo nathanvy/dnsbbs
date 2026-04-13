@@ -63,11 +63,12 @@
        (values :post-single (list :payload (second labels)
                                   :topic   (string-downcase (third labels)))))
 
-      ;; post.<payload>.<seq>.<topic>.ZONE  →  multi-chunk post
-      ((and (= n 4) (string-equal (first labels) "post"))
+      ;; post.<payload>.<nonce>.<seq>.<topic>.ZONE  →  multi-chunk post
+      ((and (= n 5) (string-equal (first labels) "post"))
        (values :post-chunk (list :payload (second labels)
-                                 :seq     (third labels)
-                                 :topic   (string-downcase (fourth labels)))))
+                                 :nonce   (third labels)
+                                 :seq     (fourth labels)
+                                 :topic   (string-downcase (fifth labels)))))
 
       ;; wtf.ZONE  →  :wtf (help)
       ((and (= n 1) (string-equal (first labels) "wtf"))
