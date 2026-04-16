@@ -56,6 +56,8 @@
   "Create a fresh in-memory store."
   (%make-memory-store (make-hash-table :test #'equal)))
 
+(defparameter *max-messages-per-topic* 10000)
+
 (defmethod list-topics ((store memory-store))
   (let ((names '()))
     (maphash (lambda (k v) (declare (ignore v)) (push k names))
@@ -87,6 +89,9 @@
     (unless topic
       (error 'storage-error
              :message (format nil "Topic not found: ~A" topic-name)))
+    (when (>= (length (topic-messages topic)) *max-messages-per-topic*)
+      (error 'storage-error
+             :message (format nil "Topic ~A is full" topic-name)))
     (let* ((id  (topic-next-id topic))
            (msg (make-message :id        id
                               :author    author

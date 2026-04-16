@@ -13,6 +13,10 @@
 (defparameter *chunk-buffer*
   (make-hash-table :test #'equal))
 
+(defconstant +max-chunks-per-session+ 64)    ; max chunks per (ip nonce topic) key
+(defconstant +max-chunk-sessions+     1024)  ; max concurrent incomplete posts
+(defconstant +max-post-b32-length+    (* 64 63)) ; redundant ceiling for assembled b32
+
 (defun expire-chunk-buffers ()
   "Remove chunk buffer entries older than 60 seconds."
   (let ((cutoff (- (get-universal-time) 60))
@@ -109,11 +113,18 @@
   (let* ((key   (list client-ip nonce topic-name))
          (entry (gethash key *chunk-buffer*))
          (now   (get-universal-time)))
+    ;; Reject new sessions when the chunk buffer is at capacity.
+    (when (and (null entry)
+               (>= (hash-table-count *chunk-buffer*) +max-chunk-sessions+))
+      (return-from handle-post-chunk :nxdomain))
     (if (string-equal seq "end")
         ;; Final chunk: assemble, decode, post.
         (let* ((prior   (if entry (getf entry :chunks) '()))
                (all-b32 (apply #'concatenate 'string
                                (append prior (list payload-b32)))))
+          (when (> (length all-b32) +max-post-b32-length+)
+            (remhash key *chunk-buffer*)
+            (return-from handle-post-chunk :nxdomain))
           (remhash key *chunk-buffer*)
           (handler-case
               (multiple-value-bind (author body)
@@ -125,6 +136,9 @@
         ;; Intermediate chunk: accumulate.
         (let ((updated-chunks (append (if entry (getf entry :chunks) '())
                                       (list payload-b32))))
+          (when (> (length updated-chunks) +max-chunks-per-session+)
+            (remhash key *chunk-buffer*)
+            (return-from handle-post-chunk :nxdomain))
           (setf (gethash key *chunk-buffer*)
                 (list :chunks     updated-chunks
                       :created-at (if entry
@@ -137,9 +151,9 @@
 (defun handle-wtf ()
   "Return help text as multiple TXT strings, one per TXT record."
   (list
-   "Topics: dig TXT index.bbs.stackgho.st"
-   "Info: dig TXT meta.<topic>.bbs.stackgho.st"
-   "Read: dig TXT msg.<id>.<topic>.bbs.stackgho.st"
-   "Read pg: dig TXT msg.<id>.<page>.<topic>.bbs.stackgho.st"
-   "Post: dig TXT post.<b32(msg)>.<topic>.bbs.stackgho.st"
-   "Post long: post.<b32-chunk>.<nonce>.<seq>.<topic>.bbs.stackgho.st, seq=0,1,...,end"))
+   "Topics: TXT index.bbs.stackgho.st"
+   "Info: TXT meta.<topic>.bbs.stackgho.st"
+   "Read: TXT msg.<id>.<topic>.bbs.stackgho.st"
+   "Read pg: TXT msg.<id>.<page>.<topic>.bbs.stackgho.st"
+   "Post: TXT post.<b32(msg)>.<topic>.bbs.stackgho.st"
+   "Long: post.<b32>.<nonce>.<seq>.<topic>.bbs.stackgho.st, seq=0,1,...,end"))

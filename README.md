@@ -11,6 +11,8 @@ This is a minimalist BBS, or maybe a web 2.0-style forum, except it runs entirel
 This BBS has only been tested on Debian `amd64`.  **Absolutely no thought whatsoever** was given towards compatibility on other architectures or operating systems.  In theory, it should run anywhere Docker and SBCL run.
 
 ## wtf
+Rationale:  https://0x85.org/dnsbbs.html
+
 Depending on when you read this page, there may be a demo running on `bbs.stackgho.st`.  Try:
 
 ```
